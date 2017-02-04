@@ -29,6 +29,8 @@ class ViewController: UIViewController {
         menuView.cellTextLabelColor = UIColor.white
         menuView.cellTextLabelFont = UIFont(name: "Avenir-Heavy", size: 17)
         menuView.cellTextLabelAlignment = .left // .Center // .Right // .Left
+        menuView.checkMarkTintColor = UIColor.red
+        menuView.checkMarkSize = 20
         menuView.arrowPadding = 15
         menuView.animationDuration = 0.5
         menuView.maskBackgroundColor = UIColor.black

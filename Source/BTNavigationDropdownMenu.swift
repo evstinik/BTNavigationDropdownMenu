@@ -69,6 +69,24 @@ open class BTNavigationDropdownMenu: UIView {
         }
     }
     
+    open var checkMarkTintColor: UIColor! {
+        get {
+            return self.configuration.checkMarkTintColor
+        }
+        set(color) {
+            self.configuration.checkMarkTintColor = color
+        }
+    }
+    
+    open var checkMarkSize: CGFloat! {
+        get {
+            return self.configuration.checkMarkSize
+        }
+        set(checkMarkSize) {
+            self.configuration.checkMarkSize = checkMarkSize
+        }
+    }
+    
     open var cellSeparatorColor: UIColor! {
         get {
             return self.configuration.cellSeparatorColor
@@ -490,6 +508,8 @@ class BTConfiguration {
     var maskBackgroundColor: UIColor!
     var maskBackgroundOpacity: CGFloat!
     var shouldChangeTitleText: Bool!
+    var checkMarkTintColor: UIColor?
+    var checkMarkSize: CGFloat = 30
     
     init() {
         self.defaultValue()
@@ -515,7 +535,7 @@ class BTConfiguration {
         self.navigationBarTitleFont = UIFont(name: "HelveticaNeue-Bold", size: 17)
         self.cellTextLabelAlignment = NSTextAlignment.left
         self.cellSelectionColor = UIColor.lightGray
-        self.checkMarkImage = UIImage(contentsOfFile: checkMarkImagePath!)
+        self.checkMarkImage = UIImage(contentsOfFile: checkMarkImagePath!)?.withRenderingMode(.alwaysTemplate)
         self.shouldKeepSelectedCellColor = false
         self.animationDuration = 0.5
         self.arrowImage = UIImage(contentsOfFile: arrowImagePath!)
@@ -612,7 +632,6 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
 
 // MARK: Table view cell
 class BTTableViewCell: UITableViewCell {
-    let checkmarkIconWidth: CGFloat = 50
     let horizontalMargin: CGFloat = 20
     
     var checkmarkIcon: UIImageView!
@@ -641,14 +660,18 @@ class BTTableViewCell: UITableViewCell {
         
         // Checkmark icon
         if self.textLabel!.textAlignment == .center {
-            self.checkmarkIcon = UIImageView(frame: CGRect(x: cellContentFrame.width - checkmarkIconWidth, y: (cellContentFrame.height - 30)/2, width: 30, height: 30))
+            self.checkmarkIcon = UIImageView(frame: CGRect(x: cellContentFrame.width - self.configuration.checkMarkSize-horizontalMargin, y: (cellContentFrame.height - self.configuration.checkMarkSize)/2, width: self.configuration.checkMarkSize, height: self.configuration.checkMarkSize))
         } else if self.textLabel!.textAlignment == .left {
-            self.checkmarkIcon = UIImageView(frame: CGRect(x: cellContentFrame.width - checkmarkIconWidth, y: (cellContentFrame.height - 30)/2, width: 30, height: 30))
+            self.checkmarkIcon = UIImageView(frame: CGRect(x: cellContentFrame.width - self.configuration.checkMarkSize-horizontalMargin, y: (cellContentFrame.height - self.configuration.checkMarkSize)/2, width: self.configuration.checkMarkSize, height: self.configuration.checkMarkSize))
         } else {
-            self.checkmarkIcon = UIImageView(frame: CGRect(x: horizontalMargin, y: (cellContentFrame.height - 30)/2, width: 30, height: 30))
+            self.checkmarkIcon = UIImageView(frame: CGRect(x: horizontalMargin, y: (cellContentFrame.height - self.configuration.checkMarkSize)/2, width: self.configuration.checkMarkSize, height: self.configuration.checkMarkSize))
         }
         self.checkmarkIcon.isHidden = true
         self.checkmarkIcon.image = self.configuration.checkMarkImage
+        if self.configuration.checkMarkTintColor != nil {
+            self.checkmarkIcon.tintColor = self.configuration.checkMarkTintColor
+        }
+        
         self.checkmarkIcon.contentMode = UIViewContentMode.scaleAspectFill
         self.contentView.addSubview(self.checkmarkIcon)
         
