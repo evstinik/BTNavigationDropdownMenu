@@ -249,14 +249,14 @@ open class BTNavigationDropdownMenu: UIView {
     fileprivate var menuArrow: UIImageView!
     fileprivate var backgroundView: UIView!
     fileprivate var tableView: BTTableView!
-    fileprivate var items: [AnyObject]!
+    fileprivate var items: [String]!
     fileprivate var menuWrapper: UIView!
     
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public init(navigationController: UINavigationController? = nil, containerView: UIView = UIApplication.shared.keyWindow!, title: String, items: [AnyObject]) {
+    public init(navigationController: UINavigationController? = nil, containerView: UIView = UIApplication.shared.keyWindow!, title: String, items: [String], minWidth: CGFloat) {
         // Key window
         guard let window = UIApplication.shared.keyWindow else {
             super.init(frame: CGRect.zero)
@@ -271,7 +271,18 @@ open class BTNavigationDropdownMenu: UIView {
         }
         
         // Get titleSize
-        let titleSize = (title as NSString).size(attributes: [NSFontAttributeName:self.configuration.navigationBarTitleFont])
+        var titleSize = (title as NSString).size(attributes: [NSFontAttributeName:self.configuration.navigationBarTitleFont])
+        
+        for item in items {
+            let itemSize = (item as NSString).size(attributes: [NSFontAttributeName:self.configuration.navigationBarTitleFont])
+            if itemSize.width > titleSize.width {
+                titleSize = itemSize
+            }
+        }
+        
+        if titleSize.width < minWidth {
+            titleSize.width = minWidth
+        }
         
         // Set frame
         let frame = CGRect(x: 0, y: 0, width: titleSize.width + (self.configuration.arrowPadding + self.configuration.arrowImage.size.width)*2, height: self.navigationController!.navigationBar.frame.height)
@@ -377,7 +388,7 @@ open class BTNavigationDropdownMenu: UIView {
         }
     }
     
-    open func updateItems(_ items: [AnyObject]) {
+    open func updateItems(_ items: [String]) {
         if !items.isEmpty {
             self.tableView.items = items
             self.tableView.reloadData()
@@ -554,18 +565,18 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
     var selectRowAtIndexPathHandler: ((_ indexPath: Int) -> ())?
     
     // Private properties
-    fileprivate var items: [AnyObject]!
+    fileprivate var items: [String]!
     fileprivate var selectedIndexPath: Int?
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(frame: CGRect, items: [AnyObject], title: String, configuration: BTConfiguration) {
+    init(frame: CGRect, items: [String], title: String, configuration: BTConfiguration) {
         super.init(frame: frame, style: UITableViewStyle.plain)
         
         self.items = items
-        self.selectedIndexPath = (items as! [String]).index(of: title)
+        self.selectedIndexPath = items.index(of: title)
         self.configuration = configuration
         
         // Setup table view
@@ -600,7 +611,7 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = BTTableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell", configuration: self.configuration)
-        cell.textLabel?.text = self.items[(indexPath as NSIndexPath).row] as? String
+        cell.textLabel?.text = self.items[(indexPath as NSIndexPath).row]
         cell.checkmarkIcon.isHidden = ((indexPath as NSIndexPath).row == selectedIndexPath) ? false : true
         return cell
     }
