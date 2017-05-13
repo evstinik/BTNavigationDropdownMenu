@@ -390,6 +390,7 @@ open class BTNavigationDropdownMenu: UIView {
     
     open func updateItems(_ items: [String]) {
         if !items.isEmpty {
+            self.items = items
             self.tableView.items = items
             self.tableView.reloadData()
         }
@@ -484,7 +485,7 @@ open class BTNavigationDropdownMenu: UIView {
     func rotateArrow() {
         UIView.animate(withDuration: self.configuration.animationDuration, animations: {[weak self] () -> () in
             if let selfie = self {
-                selfie.menuArrow.transform = selfie.menuArrow.transform.rotated(by: 180 * CGFloat(M_PI/180))
+                selfie.menuArrow.transform = selfie.menuArrow.transform.rotated(by: 180 * CGFloat(CGFloat.pi/180))
             }
             })
     }
